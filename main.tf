@@ -67,7 +67,7 @@ module "eks" {
 
   eks_managed_node_groups = {
     one = {
-      name = "node-group-1"
+      name = "node-group-1${local.env_suffix[terraform.workspace]}"
 
       instance_types = ["t3.small"]
 
@@ -77,7 +77,7 @@ module "eks" {
     }
 
     two = {
-      name = "node-group-2"
+      name = "node-group-2${local.env_suffix[terraform.workspace]}"
 
       instance_types = ["t3.small"]
 
@@ -97,7 +97,7 @@ module "irsa-ebs-csi" {
   version = "4.7.0"
 
   create_role                   = true
-  role_name                     = "AmazonEKSTFEBSCSIRole-${module.eks.cluster_name}"
+  role_name                     = "AmazonEKSTFEBSCSIRole-${module.eks.cluster_name[terraform.workspace]}"
   provider_url                  = module.eks.oidc_provider
   role_policy_arns              = [data.aws_iam_policy.ebs_csi_policy.arn]
   oidc_fully_qualified_subjects = ["system:serviceaccount:kube-system:ebs-csi-controller-sa"]
@@ -115,10 +115,10 @@ resource "aws_eks_addon" "ebs-csi" {
 }
 
 resource "aws_ecr_repository" "eks_example_app" {
-  name                 = "eks-example-app + ${local.env_suffix[terraform.workspace]}"
+  name                 = "eks-example-app${local.env_suffix[terraform.workspace]}"
   image_tag_mutability = "MUTABLE"
   tags = {
-    "name"    = "eks-example-app + ${local.env_suffix[terraform.workspace]}",
+    "name"    = "eks-example-app${local.env_suffix[terraform.workspace]}",
     "cluster" = local.cluster_name[terraform.workspace]
   }
   image_scanning_configuration {
