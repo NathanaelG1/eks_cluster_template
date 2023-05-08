@@ -3,16 +3,30 @@ provider "aws" {
 }
 
 data "aws_availability_zones" "available" {}
-
+//define any environment variables here
 locals {
-  cluster_name = "use1-xyz-eks-1"
+  cluster_name = {
+    edge       = "edge-xyz-eks-1"
+    stable     = "stable-xyz-eks-1"
+    production = "prod-xyz-eks-1"
+  }
+  vpc_name = {
+    edge       = "edge-xyz-vpc"
+    stable     = "stable-xyz-vpc"
+    production = "prod-xyz-vpc"
+  }
+  env_suffix = {
+    edge       = "-edge"
+    stable     = "-stable"
+    production = "-prod"
+  }
 }
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "3.19.0"
 
-  name = "xyz-vpc"
+  name = local.vpc_name[terraform.workspace]
 
   cidr = "10.0.0.0/16"
   azs  = slice(data.aws_availability_zones.available.names, 0, 3)
@@ -25,12 +39,12 @@ module "vpc" {
   enable_dns_hostnames = true
 
   public_subnet_tags = {
-    "kubernetes.io/cluster/${local.cluster_name}" = "shared"
+    "kubernetes.io/cluster/${local.cluster_name[terraform.workspace]}" = "shared"
     "kubernetes.io/role/elb"                      = 1
   }
 
   private_subnet_tags = {
-    "kubernetes.io/cluster/${local.cluster_name}" = "shared"
+    "kubernetes.io/cluster/${local.cluster_name[terraform.workspace]}" = "shared"
     "kubernetes.io/role/internal-elb"             = 1
   }
 }
@@ -39,7 +53,7 @@ module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "19.5.1"
 
-  cluster_name    = local.cluster_name
+  cluster_name    = local.cluster_name[terraform.workspace]
   cluster_version = "1.26"
 
   vpc_id                         = module.vpc.vpc_id
@@ -101,11 +115,11 @@ resource "aws_eks_addon" "ebs-csi" {
 }
 
 resource "aws_ecr_repository" "eks_example_app" {
-  name                 = "eks-example-app"
+  name                 = "eks-example-app + ${local.env_suffix[terraform.workspace]}"
   image_tag_mutability = "MUTABLE"
   tags = {
-    "name" = "eks-example-app",
-    "cluster" = "${local.cluster_name}"
+    "name" = "eks-example-app + ${local.env_suffix[terraform.workspace]}",
+    "cluster" = local.cluster_name[terraform.workspace]
   }
   image_scanning_configuration {
     scan_on_push = true
