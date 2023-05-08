@@ -135,7 +135,7 @@ resource "aws_ecr_repository" "eks_example_app" {
 }
 
 resource "aws_s3_bucket" "terraform-xyz" {
-  bucket = "terraform-state-xyz"
+  bucket = "terraform-xyz"
   tags = {
     "name"    = "terraform state bucket for xyz"
     "cluster" = local.cluster_name[terraform.workspace]
