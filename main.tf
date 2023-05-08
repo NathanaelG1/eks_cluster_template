@@ -25,6 +25,8 @@ locals {
 
 terraform {
   backend "s3" {
+    region="us-east-1"
+    bucket="terraform-xyz"
   }
 }
 
@@ -134,7 +136,6 @@ resource "aws_ecr_repository" "eks_example_app" {
 
 resource "aws_s3_bucket" "terraform-xyz" {
   bucket = "terraform-state-xyz"
-  region = "us-east-1"
   tags = {
     "name"    = "terraform state bucket for xyz"
     "cluster" = local.cluster_name[terraform.workspace]
