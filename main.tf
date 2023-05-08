@@ -40,12 +40,12 @@ module "vpc" {
 
   public_subnet_tags = {
     "kubernetes.io/cluster/${local.cluster_name[terraform.workspace]}" = "shared"
-    "kubernetes.io/role/elb"                      = 1
+    "kubernetes.io/role/elb"                                           = 1
   }
 
   private_subnet_tags = {
     "kubernetes.io/cluster/${local.cluster_name[terraform.workspace]}" = "shared"
-    "kubernetes.io/role/internal-elb"             = 1
+    "kubernetes.io/role/internal-elb"                                  = 1
   }
 }
 
@@ -87,7 +87,7 @@ module "eks" {
     }
   }
 }
-     
+
 data "aws_iam_policy" "ebs_csi_policy" {
   arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
 }
@@ -118,7 +118,7 @@ resource "aws_ecr_repository" "eks_example_app" {
   name                 = "eks-example-app + ${local.env_suffix[terraform.workspace]}"
   image_tag_mutability = "MUTABLE"
   tags = {
-    "name" = "eks-example-app + ${local.env_suffix[terraform.workspace]}",
+    "name"    = "eks-example-app + ${local.env_suffix[terraform.workspace]}",
     "cluster" = local.cluster_name[terraform.workspace]
   }
   image_scanning_configuration {
