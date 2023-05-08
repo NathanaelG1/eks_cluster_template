@@ -1,3 +1,4 @@
+
 provider "aws" {
   region = var.region
 }
@@ -15,10 +16,15 @@ locals {
     stable     = "stable-xyz-vpc"
     production = "prod-xyz-vpc"
   }
-  env_suffix = {
-    edge       = "-edge"
-    stable     = "-stable"
-    production = "-prod"
+  env_name = {
+    edge       = "edge"
+    stable     = "stable"
+    production = "prod"
+  }
+}
+
+terraform {
+  backend "s3" {
   }
 }
 
@@ -67,7 +73,7 @@ module "eks" {
 
   eks_managed_node_groups = {
     one = {
-      name = "node-group-1${local.env_suffix[terraform.workspace]}"
+      name = "node-group-1${local.env_name[terraform.workspace]}"
 
       instance_types = ["t3.small"]
 
@@ -77,7 +83,7 @@ module "eks" {
     }
 
     two = {
-      name = "node-group-2${local.env_suffix[terraform.workspace]}"
+      name = "node-group-2${local.env_name[terraform.workspace]}"
 
       instance_types = ["t3.small"]
 
@@ -115,13 +121,21 @@ resource "aws_eks_addon" "ebs-csi" {
 }
 
 resource "aws_ecr_repository" "eks_example_app" {
-  name                 = "eks-example-app${local.env_suffix[terraform.workspace]}"
+  name                 = "eks-example-app-${local.env_name[terraform.workspace]}"
   image_tag_mutability = "MUTABLE"
   tags = {
-    "name"    = "eks-example-app${local.env_suffix[terraform.workspace]}",
+    "name"    = "eks-example-app-${local.env_name[terraform.workspace]}",
     "cluster" = local.cluster_name[terraform.workspace]
   }
   image_scanning_configuration {
     scan_on_push = true
+  }
+}
+
+resource "aws_s3_bucket" "terraform-state-xyz" {
+  bucket = "terraform-state-xyz"
+  tags = {
+    "name"    = "terraform state bucket for xyz"
+    "cluster" = local.cluster_name[terraform.workspace]
   }
 }

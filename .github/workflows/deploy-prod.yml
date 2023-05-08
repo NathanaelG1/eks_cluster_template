@@ -34,7 +34,10 @@ jobs:
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
-      run: terraform init
+      run: terraform init \
+        -backend-config="bucket=terraform-state-xyz" \
+        -backend-config="key=production/terraform.tfstate" \
+        -backend-config="region=us-east-1" \
     #Specifying workspace allows deployment to different environments
     - name: Go to Stable workspace
       run: terraform workspace new production
