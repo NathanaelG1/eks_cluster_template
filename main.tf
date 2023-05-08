@@ -7,9 +7,9 @@ data "aws_availability_zones" "available" {}
 //define any environment variables here
 locals {
   cluster_name = {
-    edge       = "edge-xyz-eks-1"
-    stable     = "stable-xyz-eks-1"
-    production = "prod-xyz-eks-1"
+    edge       = "edge-xyz-eks"
+    stable     = "stable-xyz-eks"
+    production = "prod-xyz-eks"
   }
   vpc_name = {
     edge       = "edge-xyz-vpc"
