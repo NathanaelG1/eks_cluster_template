@@ -1,9 +1,9 @@
-name: 'Deploy Cluster to EKS'
+name: 'Deploy Cluster to Stable'
 
 on:
   push:
     branches: [ "main" ]
-  pull_request:
+  workflow_dispatch:
 
 env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}

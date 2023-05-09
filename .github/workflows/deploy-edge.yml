@@ -1,4 +1,4 @@
-name: 'Deploy Cluster to EKS'
+name: 'Deploy Cluster to Edge'
 
 on:
   push:

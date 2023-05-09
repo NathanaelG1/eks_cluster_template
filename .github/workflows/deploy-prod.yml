@@ -1,4 +1,4 @@
-name: 'Deploy Cluster to EKS'
+name: 'Deploy Cluster to Production'
 
 on:
   push:
