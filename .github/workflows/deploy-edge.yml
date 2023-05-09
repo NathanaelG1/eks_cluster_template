@@ -1,4 +1,4 @@
-name: 'Deploy Cluster to EKS'
+name: 'Deploy Cluster to Edge'
 
 on:
   push:
@@ -13,8 +13,8 @@ permissions:
   contents: read
 
 jobs:
-  deploy-stable:
-    name: 'Terraform'
+  deploy-edge:
+    name: 'Deploy Edge Cluster'
     runs-on: ubuntu-latest
     environment: edge
 
@@ -34,10 +34,10 @@ jobs:
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
-      run: terraform init
+      run: terraform init -backend-config="key=edge/terraform.tfstate"
     #Specifying workspace allows deployment to different environments
-    - name: Go to Stable workspace
-      run: terraform workspace new edge
+    - name: Go to edge workspace
+      run: terraform workspace select edge
 
     # Checks that all Terraform configuration files adhere to a canonical format
     - name: Terraform Format
@@ -49,5 +49,4 @@ jobs:
 
       # On push to "main", build or change infrastructure according to Terraform configuration files
     - name: Terraform Apply
-      if: github.ref == 'refs/heads/"edge"' && github.event_name == 'push'
       run: terraform apply -auto-approve -input=false

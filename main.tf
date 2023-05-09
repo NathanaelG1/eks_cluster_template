@@ -1,3 +1,4 @@
+
 provider "aws" {
   region = var.region
 }
@@ -6,19 +7,26 @@ data "aws_availability_zones" "available" {}
 //define any environment variables here
 locals {
   cluster_name = {
-    edge       = "edge-xyz-eks-1"
-    stable     = "stable-xyz-eks-1"
-    production = "prod-xyz-eks-1"
+    edge       = "edge-xyz-eks"
+    stable     = "stable-xyz-eks"
+    production = "prod-xyz-eks"
   }
   vpc_name = {
     edge       = "edge-xyz-vpc"
     stable     = "stable-xyz-vpc"
     production = "prod-xyz-vpc"
   }
-  env_suffix = {
-    edge       = "-edge"
-    stable     = "-stable"
-    production = "-prod"
+  env_name = {
+    edge       = "edge"
+    stable     = "stable"
+    production = "prod"
+  }
+}
+
+terraform {
+  backend "s3" {
+    region = "us-east-1"
+    bucket = "terraform-xyz"
   }
 }
 
@@ -67,7 +75,7 @@ module "eks" {
 
   eks_managed_node_groups = {
     one = {
-      name = "node-group-1"
+      name = "node-group-1${local.env_name[terraform.workspace]}"
 
       instance_types = ["t3.small"]
 
@@ -77,7 +85,7 @@ module "eks" {
     }
 
     two = {
-      name = "node-group-2"
+      name = "node-group-2${local.env_name[terraform.workspace]}"
 
       instance_types = ["t3.small"]
 
@@ -106,7 +114,7 @@ module "irsa-ebs-csi" {
 resource "aws_eks_addon" "ebs-csi" {
   cluster_name             = module.eks.cluster_name
   addon_name               = "aws-ebs-csi-driver"
-  addon_version            = "v1.5.2-eksbuild.1"
+  addon_version            = "v1.18.0-eksbuild.1"
   service_account_role_arn = module.irsa-ebs-csi.iam_role_arn
   tags = {
     "eks_addon" = "ebs-csi"
@@ -115,13 +123,16 @@ resource "aws_eks_addon" "ebs-csi" {
 }
 
 resource "aws_ecr_repository" "eks_example_app" {
-  name                 = "eks-example-app + ${local.env_suffix[terraform.workspace]}"
+  name                 = "eks-example-app-${local.env_name[terraform.workspace]}"
   image_tag_mutability = "MUTABLE"
   tags = {
-    "name"    = "eks-example-app + ${local.env_suffix[terraform.workspace]}",
+    "name"    = "eks-example-app-${local.env_name[terraform.workspace]}",
     "cluster" = local.cluster_name[terraform.workspace]
   }
   image_scanning_configuration {
     scan_on_push = true
   }
+}
+
+resource "aws_s3_bucket" "terraform-xyz" {
 }
