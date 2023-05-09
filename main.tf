@@ -29,7 +29,7 @@ terraform {
     bucket = "terraform-xyz"
   }
 }
-
+//VPC set up to have seperate environments for clusters in a quick set up. Ideally this would point to different AWS accounts
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "3.19.0"
