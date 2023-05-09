@@ -13,8 +13,8 @@ permissions:
   contents: read
 
 jobs:
-  deploy-stable:
-    name: 'Terraform'
+  deploy-production:
+    name: 'Deploy Production Cluster'
     runs-on: ubuntu-latest
     environment: production
 

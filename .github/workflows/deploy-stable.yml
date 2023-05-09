@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   deploy-stable:
-    name: 'Terraform'
+    name: 'Deploy Stable Cluster'
     runs-on: ubuntu-latest
     environment: stable
 

@@ -13,8 +13,8 @@ permissions:
   contents: read
 
 jobs:
-  deploy-stable:
-    name: 'Terraform'
+  deploy-edge:
+    name: 'Deploy Edge Cluster'
     runs-on: ubuntu-latest
     environment: edge
 
