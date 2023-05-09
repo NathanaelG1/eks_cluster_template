@@ -31,3 +31,7 @@ Hashicorp provides a great Terraform boilerplate for EKS that can be modified to
     - kubectl get namespace
     - kubectl get services --all-namespaces
     - kubectl get pods --all-namespaces
+
+# Destroy cluster
+    There is a destroy cluster job that can be optionally run with arguments: edge, stable, or production
+    Run this github action in order to destroy a cluster. Dont worry, it can be spun back up!
