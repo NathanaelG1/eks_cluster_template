@@ -1,4 +1,4 @@
-name: 'Deploy Cluster to EKS'
+name: 'Deploy Cluster to Production'
 
 on:
   push:
@@ -13,8 +13,8 @@ permissions:
   contents: read
 
 jobs:
-  deploy-stable:
-    name: 'Terraform'
+  deploy-production:
+    name: 'Deploy Production Cluster'
     runs-on: ubuntu-latest
     environment: production
 
@@ -34,7 +34,7 @@ jobs:
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
-      run: terraform init
+      run: terraform init -backend-config="key=production/terraform.tfstate"
     #Specifying workspace allows deployment to different environments
     - name: Go to Stable workspace
       run: terraform workspace select production -or-create
