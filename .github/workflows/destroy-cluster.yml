@@ -37,10 +37,10 @@ jobs:
       run: terraform init -backend-config="key=${{ github.event.inputs.cluster }}/terraform.tfstate"
     #Specifying workspace allows deployment to different environments
     - name: Go to ${{ github.event.inputs.cluster }} workspace
-      run: terraform workspace select ${{ github.event.inputs.cluster }} -or-create
+      run: terraform workspace new -state=${{ github.event.inputs.cluster }}/terraform.tfstate ${{ github.event.inputs.cluster }}
 
     - name: Terraform Destroy Plan
       run: terraform plan  -destroy -input=false
 
     - name: Destroy cluster
-      run: terraform apply -destroy
+      run: terraform apply -destroy -auto-approve -input=false
