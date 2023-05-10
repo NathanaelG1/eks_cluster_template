@@ -28,13 +28,16 @@ jobs:
         shell: bash
 
     steps:
+    #checkout code for runner
+    - name: Checkout
+      uses: actions/checkout@v3
     # Install the latest version of Terraform CLI
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
-      run: terraform init -backend-config="key=stable/terraform.tfstate"
+      run: terraform init -backend-config="key=${{ github.event.inputs.cluster }}/terraform.tfstate"
     #Specifying workspace allows deployment to different environments
     - name: Go to ${{ github.event.inputs.cluster }} workspace
       run: terraform workspace select -or-create ${{ github.event.inputs.cluster }}
