@@ -37,7 +37,7 @@ jobs:
       run: terraform init -backend-config="key=edge/terraform.tfstate"
     #Specifying workspace allows deployment to different environments
     - name: Go to Stable workspace
-      run: terraform workspace select edge -or-create=false
+      run: terraform workspace select -or-create edge
 
     # Checks that all Terraform configuration files adhere to a canonical format
     - name: Terraform Format
