@@ -1,0 +1,46 @@
+name: 'Destroy cluster'
+
+on:
+  workflow_dispatch:
+    inputs:
+        cluster:
+            description: 'Choose cluster environment (edge, stable, production)'
+            required: true
+            default: 'edge'
+            
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+permissions:
+  contents: read
+
+jobs:
+  destroy-cluster:
+    name: 'Destroy ${{ github.event.inputs.cluster }} Cluster'
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.cluster }}
+
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    # Install the latest version of Terraform CLI
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+    - name: Terraform Init
+      run: terraform init -backend-config="key=${{ github.event.inputs.cluster }}/terraform.tfstate"
+    #Specifying workspace allows deployment to different environments
+    - name: Go to ${{ github.event.inputs.cluster }} workspace
+      run: terraform workspace select ${{ github.event.inputs.cluster }} -or-create
+
+    - name: Terraform Destroy Plan
+      run: terraform plan  -destroy -input=false
+
+    - name: Destroy cluster
+      run: terraform apply -destroy

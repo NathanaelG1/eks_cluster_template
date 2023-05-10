@@ -37,7 +37,7 @@ jobs:
       run: terraform init
     #Specifying workspace allows deployment to different environments
     - name: Go to Stable workspace
-      run: terraform workspace new production
+      run: terraform workspace select production -or-create
 
     # Checks that all Terraform configuration files adhere to a canonical format
     - name: Terraform Format
