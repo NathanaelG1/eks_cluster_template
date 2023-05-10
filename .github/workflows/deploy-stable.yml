@@ -36,7 +36,7 @@ jobs:
       run: terraform init -backend-config="key=stable/terraform.tfstate"
     #Specifying workspace allows deployment to different environments, change to 'terraform workspace select stable' on next run
     - name: Go to Stable workspace
-      run: terraform workspace new stable
+      run: terraform workspace select -or-create stable
 
     # Checks that all Terraform configuration files adhere to a canonical format
     - name: Terraform Format

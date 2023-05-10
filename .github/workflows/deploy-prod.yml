@@ -37,7 +37,7 @@ jobs:
       run: terraform init -backend-config="key=production/terraform.tfstate"
     #Specifying workspace allows deployment to different environments
     - name: Go to production workspace
-      run: terraform workspace new production
+      run: terraform workspace select -or-create production
 
     # Checks that all Terraform configuration files adhere to a canonical format
     - name: Terraform Format
